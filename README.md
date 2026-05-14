@@ -6,6 +6,22 @@
 
 Telegram DM bridge for pi.
 
+## Changes from the original `pi-telegram`
+
+- `allowedUserIds` replaces `allowedUserId` to support multiple users
+- `tempDir` config option for file handling, defaulting to `~/.pi/agent/tmp/telegram`
+
+```ts
+interface TelegramConfig {
+  botToken?: string;
+  botUsername?: string;
+  botId?: number;
+  allowedUserIds?: number[];
+  lastUpdateId?: number;
+  tempDir?: string;
+}
+```
+
 ## Install
 
 From git:
@@ -87,6 +103,7 @@ Send any message in the bot DM. It is forwarded into pi with a `[telegram]` pref
 Send images, albums, or files in the DM.
 
 The extension:
+
 - downloads them to `~/.pi/agent/tmp/telegram`
 - includes local file paths in the prompt
 - forwards inbound images as image inputs to pi
@@ -96,6 +113,7 @@ The extension:
 If you ask pi for a file or generated artifact, pi should call the `telegram_attach` tool. The extension then sends those files with the next Telegram reply.
 
 Examples:
+
 - `summarize this image`
 - `read this README and summarize it`
 - `write me a markdown file with the plan and send it back`

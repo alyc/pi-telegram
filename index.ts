@@ -17,6 +17,7 @@ interface TelegramConfig {
   botId?: number;
   allowedUserIds?: number[];
   lastUpdateId?: number;
+  tempDir?: string;
 }
 
 interface TelegramApiResponse<T> {
@@ -156,7 +157,7 @@ interface TelegramMediaGroupState {
 }
 
 const CONFIG_PATH = join(homedir(), ".pi", "agent", "telegram.json");
-const TEMP_DIR = join(homedir(), ".pi", "agent", "tmp", "telegram");
+let TEMP_DIR = join(homedir(), ".pi", "agent", "tmp", "telegram");
 const TELEGRAM_PREFIX = "[telegram]";
 const MAX_MESSAGE_LENGTH = 4096;
 const MAX_ATTACHMENTS_PER_TURN = 10;
@@ -284,6 +285,7 @@ function readConfig(ctx: ExtensionContext): TelegramConfig {
       ? readFileSync(join(ctx.cwd, ".pi", "telegram.json"), "utf8")
       : readFileSync(CONFIG_PATH, "utf8");
     const parsed = JSON.parse(content) as TelegramConfig;
+    if (parsed.tempDir) TEMP_DIR = parsed.tempDir;
     return parsed;
   } catch {
     return {};
@@ -1085,7 +1087,7 @@ export default function (pi: ExtensionAPI) {
       );
     }
 
-    if (config.allowedUserIds.includes(message.from.id)) {
+    if (!config.allowedUserIds.includes(message.from.id)) {
       await sendTextReply(
         message.chat.id,
         message.message_id,
